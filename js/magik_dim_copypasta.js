@@ -41,13 +41,21 @@ app.registerExtension({
                         });
                         return;
                     }
-                    // Set the node's size (triggers a redraw)
-                    node.size = [sizeClipboard.width, sizeClipboard.height];
+                    const selected = app.canvas?.selected_nodes
+                        ? Object.values(app.canvas.selected_nodes)
+                        : [];
+                    const targets =
+                        selected.length > 1 && selected.includes(node) ? selected : [node];
+                    for (const target of targets) {
+                        if (target?.size) {
+                            target.size = [sizeClipboard.width, sizeClipboard.height];
+                        }
+                    }
                     app.canvas?.setDirty(true, true);
                     app.extensionManager.toast.add({
                         severity: "success",
                         summary: "Node Size Pasted",
-                        detail: `${sizeClipboard.width} × ${sizeClipboard.height}`,
+                        detail: `${sizeClipboard.width} × ${sizeClipboard.height} on ${targets.length} node${targets.length === 1 ? "" : "s"}`,
                         life: 2000,
                     });
                 },
